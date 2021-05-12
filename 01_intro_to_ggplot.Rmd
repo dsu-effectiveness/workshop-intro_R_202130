@@ -1,9 +1,11 @@
 ---
-title: "Working with data"
+title: "Plotting data"
 output: html_document
 ---
 
 <!-- This file by Matt Nickodemus is licensed under a Creative Commons Attribution 4.0 International License -->
+
+![](image/R-superstar.jpg){width=35%}
 
 # The basics of ggplot2
 
