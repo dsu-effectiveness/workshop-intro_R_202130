@@ -1,0 +1,148 @@
+---
+title: "Intro to dplyr"
+output: html_document
+---
+
+```{r, message = FALSE, error = FALSE}
+library(tidyverse)
+library(readr)
+library(here)
+library(DT)
+library(scales)
+```
+
+
+<!-- This file by Matt Nickodemus is licensed under a Creative Commons Attribution 4.0 International License -->
+
+# The basics of dplyr
+
+## Getting our data
+
+```{r}
+graduates <- read_delim('fake_graduates.csv',  # the name of the file. Don't forget the path if you need it
+                        delim = ';',  # specify the delimiter. 
+                        col_types = cols(               # specify the data types of the columns
+                          name = col_character(),
+                          program_id = col_character(),
+                          CIP = col_character(),
+                          CIP_desc = col_character(),
+                          College = col_character(),
+                          Department = col_character(),
+                          Program = col_character(),
+                          Award = col_character(),
+                          year = col_character()
+                        ))
+```
+
+
+## SELECT and FILTER
+
+Suppose we want just a list of all the graduates from 2001, together with the College they graduated from.
+
+```{r}
+graduates_2001 <- graduates %>% 
+  filter(year == '2001') %>% 
+  select(name, College)
+```
+
+## GROUP BY and COUNT
+
+Now suppose that we want to count how many graduates each college had. To do this we will use the `group_by` and `mutate` functions from the `tidyverse`.
+
+```{r}
+graduate_count_by_college_2001 <- graduates_2001 %>% 
+  select(- name) %>% 
+  group_by(College) %>% 
+  count(name = 'headcount')
+```
+
+Now let's throw this into a bar chart.
+
+```{r}
+ggplot(graduate_count_by_college_2001,
+       aes(x = reorder(College, headcount), y = headcount, fill = College)) + # the reorder function arranges to bars
+  geom_bar(stat='identity') +
+  coord_flip() +
+  theme_minimal() +
+  scale_y_continuous(labels = comma) +
+  theme(legend.position = "none",
+        plot.subtitle = element_text(color = "#a6a6a6", size = 10),
+    plot.caption = element_text(color = '#a6a6a6', size = 8, face = 'italic')
+    ) +
+  labs(title = "Number of Graduates",
+       subtitle = "Number of graduates within each college 2000-2001 academic year",
+       caption = "Data supplied by OIE",
+       x = 'College',
+       y = 'Number of Graduates')
+```
+
+```{r}
+datatable(graduate_count_by_college_2001)
+```
+
+
+## Functions
+
+Now suppose that we wanted to make a table and a bar chart for each of the years 2001-2005. We don't want to copy and past the code from our code chunks over and over. The reason is that this makes it hard to change anything, and it makes it hard to maintain the application. To address these problems we use functions.
+
+### Create the dataframe
+
+```{r}
+make_df <- function(year) {
+  
+  output_data_frame <- graduates %>% 
+  filter(year == {{year}}) %>% 
+  select(name, College) %>% 
+  select(- name) %>% 
+  group_by(College) %>% 
+  count(name = 'headcount')
+  
+  return(output_data_frame)
+}
+
+make_graph <- function(graduate_df) {
+  
+  ggplot(graduate_df, # We just make a change here
+       aes(x = reorder(College, headcount), y = headcount, fill = College)) +
+  geom_bar(stat='identity') +
+  coord_flip() +
+  theme_minimal() +
+  scale_y_continuous(labels = comma) +
+  theme(legend.position = "none",
+        plot.subtitle = element_text(color = "#a6a6a6", size = 10),
+    plot.caption = element_text(color = '#a6a6a6', size = 8, face = 'italic')
+    ) +
+  labs(title = "Number of Graduates",
+       subtitle = "Number of graduates within each college 2000-2001 academic year",
+       caption = "Data supplied by OIE",
+       x = 'College',
+       y = 'Number of Graduates')
+}
+```
+
+```{r}
+graduate_count_by_college_2002 <- make_df(2002)
+```
+
+```{r}
+make_graph(graduate_count_by_college_2002)
+```
+
+```{r}
+datatable(graduate_count_by_college_2002)
+```
+
+# Homework
+
+Use the data from this markdown sheet to create a report which reports out on the number of graduates by college for 2001-2005. This report should have a bar chart and a table for each year. 
+
+
+
+
+ 
+
+
+
+
+
+

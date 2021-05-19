@@ -1,0 +1,156 @@
+---
+title: "Number of graduates by college 2000-2005"
+output: html_document
+---
+
+<!-- This file by Matt Nickodemus is licensed under a Creative Commons Attribution 4.0 International License -->
+
+<!-- These steps all load the data and the functions. We don't want the end user to see these -->
+
+```{r load libraries, message = FALSE, error = FALSE, echo = FALSE}
+library(tidyverse)
+library(readr)
+library(here)
+library(DT)
+library(scales)
+```
+
+
+```{r load the data, echo = FALSE}
+graduates <- read_delim('fake_graduates.csv', 
+                        delim = ';',
+                        col_types = cols( 
+                          name = col_character(),
+                          program_id = col_character(),
+                          CIP = col_character(),
+                          CIP_desc = col_character(),
+                          College = col_character(),
+                          Department = col_character(),
+                          Program = col_character(),
+                          Award = col_character(),
+                          year = col_character()
+                        ))
+```
+
+```{r create the functions, echo = FALSE}
+make_df <- function(year) {
+  
+  output_data_frame <- graduates %>% 
+  filter(year == {{year}} ) %>% 
+  select(name, College) %>% 
+  select(- name) %>% 
+  group_by(College) %>% 
+  count(name = 'headcount') %>% 
+  ungroup()
+  
+  return(output_data_frame)
+}
+
+make_graph <- function(graduate_df) {
+  
+  ggplot(graduate_df, # We just make a change here
+       aes(x = reorder(College, headcount), y = headcount, fill = College)) +
+  geom_bar(stat='identity') +
+  coord_flip() +
+  theme_minimal() +
+  scale_y_continuous(labels = comma) +
+  theme(legend.position = "none",
+        plot.subtitle = element_text(color = "#a6a6a6", size = 10),
+    plot.caption = element_text(color = '#a6a6a6', size = 8, face = 'italic')
+    ) +
+  labs(title = "Number of Graduates",
+       subtitle = "Number of graduates within each college 2000-2001 academic year",
+       caption = "Data supplied by OIE",
+       x = 'College',
+       y = 'Number of Graduates')
+}
+```
+
+```{r creating the data frames, echo = FALSE, message = FALSE, warning = FALSE}
+# Here we create the graduate data frames using the copy and past strategy
+graduate_count_by_college_2001 <- make_df(2001)
+graduate_count_by_college_2002 <- make_df(2002)
+graduate_count_by_college_2003 <- make_df(2003)
+graduate_count_by_college_2004 <- make_df(2004)
+graduate_count_by_college_2005 <- make_df(2005)
+
+# Here we create them using a for loop
+holder <- vector(mode = 'list', length = 5) # make a list to hold the data frames
+names(holder) <- 2001:2005 # name the items of the list
+
+for (i in 2001:2005) {
+  holder[[as.character(i)]] <- make_df(i)
+}
+
+# Here we create them using the purrr library
+library(purrr)
+year_vec <- as.character(2001:2005) # make a list to apply our function to
+
+purrr_list <- map(year_vec, make_df) # apply the function
+names(purrr_list) <- year_vec
+```
+
+<!-- We can add html and css directly to the markdown document if we want to -->
+```{css, echo=FALSE}
+.shnazy {
+  font-size: 20px;
+}
+```
+
+Greetings! Here are a bunch of words to explain this report.
+
+<p class='shnazy'>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+</p>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+<hr>
+## 2001
+
+```{r, echo = FALSE}
+make_graph(graduate_count_by_college_2001)
+```
+
+```{r, echo = FALSE}
+datatable(graduate_count_by_college_2001)
+```
+
+<br>
+<br>
+<br>
+<hr>
+## 2002
+
+```{r, echo = FALSE}
+make_graph(holder[['2002']])
+```
+
+```{r, echo = FALSE}
+datatable(holder[['2002']])
+```
+
+<br>
+<br>
+<br>
+<hr>
+## 2003
+
+```{r, echo = FALSE}
+make_graph(purrr_list[['2003']])
+```
+
+```{r, echo = FALSE}
+datatable(purrr_list[['2003']])
+```
+
+<br>
+<br>
+
+```{r, echo = FALSE}
+make_graph(graduate_count_by_college_2004)
+```
+
+```{r, echo = FALSE}
+datatable(graduate_count_by_college_2004)
+```
