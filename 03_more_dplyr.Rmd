@@ -54,17 +54,6 @@ aggregate_by_college <- student_list %>%
   ungroup()
 ```
 
-## Aggregate by College
-
-```{r}
-aggregate_by_college <- student_list %>% 
-  select(student_college, student_banner_id) %>% 
-  group_by(student_college) %>% 
-  count() %>% 
-  ungroup()
-```
-
-
 ### Table
 
 
