@@ -1,0 +1,48 @@
+---
+title: "More dplyr"
+output: html_document
+---
+
+```{r setup, warning = FALSE, message = FALSE}
+library(here)
+library(DT)
+library(gt)
+source("data_io_util.R")
+
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+# Pull the data
+```{r data pull}
+student_list <- get_data_from_sql(file_name="student_list.sql", dsn="BRPT")
+saveRDS(student_list, file = here::here('sensitive', 'student_list.RDS'))
+```
+
+# Munge the data
+
+Here we are going to shape the data into what we want.
+
+## Aggregate by Advisor
+
+```{r}
+aggregate_by_advisor <- student_list %>% 
+  select(advisor_full_name, student_banner_id) %>% 
+  group_by(advisor_full_name) %>% 
+  count() %>% 
+  ungroup()
+```
+
+
+### Table
+
+
+```{r}
+aggregate_by_advisor %>% datatable()
+```
+
+
+### Barchart
+
+## Aggregate by College
+
+## Aggregate by Program
