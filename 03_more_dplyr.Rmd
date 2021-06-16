@@ -14,8 +14,9 @@ knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
 
 # Pull the data
 ```{r data pull}
-student_list <- get_data_from_sql(file_name="student_list.sql", dsn="BRPT")
-saveRDS(student_list, file = here::here('sensitive', 'student_list.RDS'))
+#student_list <- get_data_from_sql(file_name="student_list.sql", dsn="BRPT")
+#saveRDS(student_list, file = here::here('sensitive', 'student_list.RDS'))
+student_list <- readRDS(here::here('sensitive', 'student_list.RDS'))
 ```
 
 # Munge the data
