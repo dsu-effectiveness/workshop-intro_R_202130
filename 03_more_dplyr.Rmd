@@ -44,6 +44,31 @@ aggregate_by_advisor %>% datatable()
 
 ### Barchart
 
+
+# Aggregate by College
+```{r}
+aggregate_by_college <- student_list %>% 
+  select(student_college, student_banner_id) %>% 
+  group_by(student_college) %>% 
+  count() %>% 
+  ungroup()
+```
+
 ## Aggregate by College
 
+```{r}
+aggregate_by_college <- student_list %>% 
+  select(student_college, student_banner_id) %>% 
+  group_by(student_college) %>% 
+  count() %>% 
+  ungroup()
+```
+
+
+### Table
+
+
+```{r}
+aggregate_by_college %>% datatable()
+```
 ## Aggregate by Program
