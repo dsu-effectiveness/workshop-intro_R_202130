@@ -91,7 +91,7 @@ Now suppose that we wanted to make a table and a bar chart for each of the years
 make_df <- function(year) {
   
   output_data_frame <- graduates %>% 
-  filter(year == {{year}}) %>% 
+  filter(year == {{year}} ) %>% 
   select(name, College) %>% 
   select(- name) %>% 
   group_by(College) %>% 
