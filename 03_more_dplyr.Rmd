@@ -8,6 +8,9 @@ library(here)
 library(DT)
 library(gt)
 source("data_io_util.R")
+library(tidyverse)
+library(readr)
+library(scales)
 
 knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
 ```
@@ -25,6 +28,7 @@ Here we are going to shape the data into what we want.
 
 ## Aggregate by Advisor
 
+
 ```{r}
 aggregate_by_advisor <- student_list %>% 
   select(advisor_full_name, student_banner_id) %>% 
@@ -41,11 +45,38 @@ aggregate_by_advisor <- student_list %>%
 aggregate_by_advisor %>% datatable()
 ```
 
-
 ### Barchart
+
+## GROUP BY and COUNT
+
+Now suppose that we want to count how many graduates each college had. To do this we will use the `group_by` and `mutate` functions from the `tidyverse`.
+
+
+
+Now let's throw this into a bar chart.
+
+ 
+```{r}
+ggplot(aggregate_by_advisor,
+       aes (x = reorder(advisor_full_name, n), y = n, fill = advisor_full_name)) + # the reorder function arranges to bars
+  geom_bar(stat='identity') +
+  coord_flip() +
+  theme_minimal() +
+  scale_y_continuous(labels = comma) +
+  theme(legend.position = "none",
+        plot.subtitle = element_text(color = "#a6a6a6", size = 10),
+    plot.caption = element_text(color = '#a6a6a6', size = 8, face = 'italic')
+    ) +
+  labs(title = "Number of students by Academic Advisor",
+       subtitle = "",
+       caption = "Data supplied by OIE",
+       x = 'Academic Advisor',
+       y = 'Number of Students')
+```
 
 
 # Aggregate by College
+
 ```{r}
 aggregate_by_college <- student_list %>% 
   select(student_college, student_banner_id) %>% 
@@ -61,6 +92,27 @@ aggregate_by_college <- student_list %>%
 aggregate_by_college %>% datatable()
 ```
 
+### Barchart
+
+```{r}
+ggplot(aggregate_by_college,
+       aes (x = reorder(student_college, n), y = n, fill = student_college)) + # the reorder function arranges to bars
+  geom_bar(stat='identity') +
+  coord_flip() +
+  theme_minimal() +
+  scale_y_continuous(labels = comma) +
+  theme(legend.position = "none",
+        plot.subtitle = element_text(color = "#a6a6a6", size = 10),
+    plot.caption = element_text(color = '#a6a6a6', size = 8, face = 'italic')
+    ) +
+  labs(title = "Number of students by Academic Advisor",
+       subtitle = "",
+       caption = "Data supplied by OIE",
+       x = 'College',
+       y = 'Number of Students')
+```
+
+
 ## Aggregate by Program
 
 
@@ -73,9 +125,29 @@ aggregate_by_program <- student_list %>%
 ```
 
 
+
 ### Table
 
 
 ```{r}
 aggregate_by_program %>% datatable()
+```
+### Barchart
+
+```{r}
+ggplot(aggregate_by_program,
+       aes (x = reorder(student_program, n), y = n, fill = student_program)) + # the reorder function arranges to bars
+  geom_bar(stat='identity') +
+  coord_flip() +
+  theme_minimal() +
+  scale_y_continuous(labels = comma) +
+  theme(legend.position = "none",
+        plot.subtitle = element_text(color = "#a6a6a6", size = 10),
+    plot.caption = element_text(color = '#a6a6a6', size = 8, face = 'italic')
+    ) +
+  labs(title = "Number of students by Academic Advisor",
+       subtitle = "",
+       caption = "Data supplied by OIE",
+       x = 'Program',
+       y = 'Number of Students')
 ```
