@@ -60,4 +60,22 @@ aggregate_by_college <- student_list %>%
 ```{r}
 aggregate_by_college %>% datatable()
 ```
+
 ## Aggregate by Program
+
+
+```{r}
+aggregate_by_program <- student_list %>% 
+  select(student_program, student_banner_id) %>% 
+  group_by(student_program) %>% 
+  count() %>% 
+  ungroup()
+```
+
+
+### Table
+
+
+```{r}
+aggregate_by_program %>% datatable()
+```
